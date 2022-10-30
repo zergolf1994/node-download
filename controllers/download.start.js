@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
 
             //update files
             await Files.update(
-              { e_code: 333 },
+              { status: 0, e_code: 333 },
               {
                 where: { id: ovdl.fid },
                 silent: true,
