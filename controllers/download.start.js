@@ -81,7 +81,7 @@ module.exports = async (req, res) => {
                 sid: sv?.id,
                 type: "download",
                 [Op.and]: Sequelize.literal(
-                  `ABS(TIMESTAMPDIFF(SECOND , createdAt , NOW())) >= ${stg_auto_cancle}`
+                  `ABS(TIMESTAMPDIFF(SECOND , createdAt , NOW())) >= ${dl_auto_cancle}`
                 ),
               },
               raw: true,
