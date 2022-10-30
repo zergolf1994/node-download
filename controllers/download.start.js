@@ -162,7 +162,7 @@ module.exports = async (req, res) => {
       await Files.update(
         { e_code: 0 },
         {
-          where: { status: 0, code: 333 },
+          where: { status: 0, e_code: 333 },
           silent: true,
         }
       );
