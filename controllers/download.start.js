@@ -157,8 +157,17 @@ module.exports = async (req, res) => {
       limit: limit,
     });
 
-    if (!FilesEmpty[0])
+    if (!FilesEmpty[0]) {
+      //update code 333 to 0
+      await Files.update(
+        { e_code: 0 },
+        {
+          where: { status: 0, code: 333 },
+          silent: true,
+        }
+      );
       return res.json({ status: false, msg: `Files not empty` });
+    }
 
     const i = Math.floor(Math.random() * FilesEmpty.length);
     let file = FilesEmpty[i];
