@@ -31,8 +31,16 @@ then
 	gdrive_api="http://127.0.0.1:8888/gdrive/info?gid=${source}"
 	gdrive_data=$(curl -sS "$gdrive_api")
 	gdrive_status=$(echo $gdrive_data | jq -r '.status')
+	error_code=$(echo $gdrive_data | jq -r '.errorcode')
 
-	if [[ ! "$gdrive_status" ]]; then
+	
+
+	if [[  $gdrive_status == "false" ]]; then
+
+		err_api="http://127.0.0.1:8888/download/error?slug=${slug}&e_code=${error_code}&sv_ip=${localip}"
+		curl -sS "${err_api}"
+		sleep 2
+		curl -sS "http://127.0.0.1:8888/download/start?sv_ip=${localip}"
 		echo "exit"
 		exit 1
 	fi
@@ -69,6 +77,7 @@ fi
 
 if [ $type == "gdrive" ]
 then
+
     cd ${save_path} && sudo -u root gdrive download ${source} >> ${tmp_download} 2>&1
     cd 
     sleep 3

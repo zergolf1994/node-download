@@ -1,6 +1,8 @@
 "use strict";
 
 const shell = require("shelljs");
+const request = require("request");
+const queryString = require("query-string");
 
 module.exports = async (req, res) => {
   const { gid } = req.query;
@@ -13,19 +15,29 @@ module.exports = async (req, res) => {
     let error404 = /Failed to get file/i;
 
     if (error404.test(data_out)) {
-      return res.json({ status: false, data_out });
+      const { errorcode } = await driveInfoRequset(gid);
+      return res.json({ status: false, data_out, errorcode });
     }
 
     let data = await driveData(data_out);
-    if(data){
-        data.ext = data?.Mime.split("/")[1];
-        return res.json({ status: true, data });
-    }else{
-        return res.json({ status: false });
+    if (data) {
+      data.ext = data?.Mime.split("/")[1];
+      return res.json({ status: true, data });
+    } else {
+      return res.json({ status: false });
     }
-
   } catch (error) {
     return res.json({ status: false, msg: error.name });
+  }
+
+  async function driveInfoRequset(gid) {
+    const url = `https://docs.google.com/get_video_info?docid=${gid}`;
+    return new Promise(function (resolve, reject) {
+      request(url, function (error, response, body) {
+        const parsed = queryString.parse(response.body);
+        resolve(parsed);
+      });
+    });
   }
   async function driveInfo(req, res) {
     return new Promise(function (resolve, reject) {
