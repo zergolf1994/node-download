@@ -118,7 +118,7 @@ module.exports = async (req, res) => {
 
     //new function focus_uid
     if (dl_focus_uid) {
-      dl_focus_uid.uid = {
+      where_files.uid = {
         [Op.or]: dl_focus_uid.split(","),
       };
 
