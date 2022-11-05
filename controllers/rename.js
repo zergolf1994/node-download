@@ -8,15 +8,12 @@ module.exports = async (req, res) => {
   try {
     if (!gid || !slug) return res.json({ status: false });
 
-    
     const g = await getRequest(`http://127.0.0.1:8888/gdrive/info?gid=${gid}`);
 
     if (!g?.status) return res.json({ status: false });
 
-    
-    let old_file = `/home/public/${slug}/${g?.data?.Name}`,
-      new_file = `/home/public/${slug}/${slug}.${g?.data?.ext}`;
-
+    let old_file = `${global.dir}/public/${slug}/${g?.data?.Name}`,
+      new_file = `${global.dir}/public/${slug}/${slug}.${g?.data?.ext}`;
 
     fs.rename(old_file, new_file, () => {
       console.log("\nFile Renamed!\n");
