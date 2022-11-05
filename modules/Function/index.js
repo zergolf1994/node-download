@@ -6,6 +6,14 @@ const Files = require("../Mysql/Files");
 const UserSettings = require("../Mysql/Users.settings");
 const Settings = require("../Mysql/Settings");
 
+exports.timeSleep = async (sec) => {
+  if (!sec) {
+    sec = Math.floor(Math.random() * 10);
+  }
+  console.log("timeSleep", sec);
+  return new Promise((rs) => setTimeout(rs, sec * 1000));
+};
+
 exports.SettingValue = async (e) => {
   let data = [];
   try {

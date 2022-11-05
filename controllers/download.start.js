@@ -7,11 +7,13 @@ const Servers = require("../modules/Mysql/Servers");
 const Progress = require("../modules/Mysql/Progress");
 const { Sequelize, Op } = require("sequelize");
 const shell = require("shelljs");
-const { SettingValue } = require("../modules/Function");
+const { SettingValue, timeSleep } = require("../modules/Function");
 
 module.exports = async (req, res) => {
   const { sv_ip } = req.query;
   try {
+    await timeSleep();
+
     if (!sv_ip) return res.json({ status: false });
     let { dl_status, dl_dl_by, dl_dl_sort, dl_auto_cancle, dl_focus_uid } =
       await SettingValue(true);
