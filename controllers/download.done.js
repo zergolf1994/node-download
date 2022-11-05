@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
       where_data = {},
       data = {},
       limit = 5,
-      mainpath = `/home/public/${slug}/`,
+      mainpath = `${global.dir}/public/${slug}/`,
       backup_gid;
 
     //find process

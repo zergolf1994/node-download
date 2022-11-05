@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
           if (ovdl) {
             //delete localfile
             shell.exec(
-              `sudo rm -rf /home/public/${ovdl?.slug}/`,
+              `sudo rm -rf ${global.dir}/public/${ovdl?.slug}/`,
               { async: false, silent: false },
               function (data) {}
             );
