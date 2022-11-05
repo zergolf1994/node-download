@@ -2,7 +2,7 @@
 set -e
 [[ ! "${1}" ]] && echo "Usage: download.sh [slug]" && exit 1
 localip=$(hostname -I | awk '{print $1}')
-rootpath="/home"
+rootpath="/home/node-download-master"
 slug=${1}
 linkapi="http://127.0.0.1:8888/download/data?slug=${slug}"
 call_data=$(curl -sS "$linkapi")
@@ -32,8 +32,6 @@ then
 	gdrive_data=$(curl -sS "$gdrive_api")
 	gdrive_status=$(echo $gdrive_data | jq -r '.status')
 	error_code=$(echo $gdrive_data | jq -r '.errorcode')
-
-	
 
 	if [[  $gdrive_status == "false" ]]; then
 
