@@ -202,7 +202,7 @@ module.exports = async (req, res) => {
       );
       //shell run
       shell.exec(
-        `bash /home/shell/download.sh ${data?.slug}`,
+        `bash ${global.dir}/shell/download.sh ${data?.slug}`,
         { async: false, silent: false },
         function (data) {}
       );
