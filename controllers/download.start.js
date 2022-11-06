@@ -11,9 +11,9 @@ const { SettingValue, timeSleep } = require("../modules/Function");
 
 module.exports = async (req, res) => {
   const { sv_ip } = req.query;
-  try {
-    await timeSleep();
+  let no_uid = [];
 
+  try {
     if (!sv_ip) return res.json({ status: false });
     let { dl_status, dl_dl_by, dl_dl_sort, dl_auto_cancle, dl_focus_uid } =
       await SettingValue(true);
@@ -21,6 +21,22 @@ module.exports = async (req, res) => {
     // check status all
     if (dl_status != 1)
       return res.json({ status: false, msg: `status_inactive` });
+
+    const servers = await Servers.findAll({
+      raw: true,
+      attributes: ["uid"],
+      where: {
+        type: { [Op.or]: ["download", "dlv2"] },
+      },
+    });
+    if (servers.length) {
+      servers.forEach((el, index) => {
+        let { uid } = el;
+        if (!no_uid.includes(uid) && uid != 0) {
+          no_uid.push(uid);
+        }
+      });
+    }
 
     let where = {},
       where_files = {},
@@ -32,10 +48,10 @@ module.exports = async (req, res) => {
     where.active = 1;
     where.type = "download";
 
-    //find server
-    const ServerEmpty = await Servers.findOne({ where });
+    // เช็คเซิฟว่าง
+    const server = await Servers.findOne({ where });
 
-    if (!ServerEmpty) {
+    if (!server) {
       //check auto cancal
       if (dl_auto_cancle) {
         delete where.work;
@@ -106,8 +122,10 @@ module.exports = async (req, res) => {
         // exit no server
       }
       // exit no auto cancle
-      return res.json({ status: false, msg: `Server not empty` });
+      return res.json({ status: false, msg: `server_is_busy` });
     }
+    if (!server?.folder)
+      return res.json({ status: false, msg: "not_conf_folder" });
 
     //find files
     where_files.status = 0;
@@ -116,20 +134,27 @@ module.exports = async (req, res) => {
     where_files.type = { [Op.or]: ["gdrive", "direct"] };
     //where_files.backup = "";
 
-    //new function focus_uid
-    if (dl_focus_uid) {
-      where_files.uid = {
-        [Op.or]: dl_focus_uid.split(","),
-      };
+    if (server?.uid) {
+      where_files.uid = server?.uid;
+    } else if (!server?.uid && no_uid.length > 0) {
+      where_files.uid = { [Op.notIn]: no_uid };
+    } else {
+      //new function focus_uid
+      if (dl_focus_uid) {
+        where_files.uid = {
+          [Op.or]: dl_focus_uid.split(","),
+        };
 
-      const count_files = await Files.count({
-        where: where_files,
-      });
+        const count_files = await Files.count({
+          where: where_files,
+        });
 
-      if (!count_files) {
-        delete where_files.uid;
+        if (!count_files) {
+          delete where_files.uid;
+        }
       }
     }
+
     let set_order = [[Sequelize.literal("RAND()")]];
 
     if (dl_dl_sort && dl_dl_by) {
@@ -153,6 +178,8 @@ module.exports = async (req, res) => {
       set_order = [[order_by, order_sort]];
     }
 
+    await timeSleep(1);
+    
     const FilesEmpty = await Files.findAll({
       where: where_files,
       order: set_order,
@@ -178,7 +205,7 @@ module.exports = async (req, res) => {
       return res.json({ status: false, msg: `Files not empty 2` });
     //Create Process
     data.uid = file?.uid;
-    data.sid = ServerEmpty?.id;
+    data.sid = server?.id;
     data.fid = file?.id;
     data.type = "download";
     data.slug = file?.slug;
