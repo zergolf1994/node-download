@@ -4,13 +4,15 @@ const path = require("path");
 const Files = require("../modules/Mysql/Files");
 const Servers = require("../modules/Mysql/Servers");
 const Progress = require("../modules/Mysql/Progress");
+const Backup = require("../modules/Mysql/Backup");
+
 const { Sequelize, Op } = require("sequelize");
 const ffmpeg = require("fluent-ffmpeg");
 const fs = require("fs-extra");
 
 const shell = require("shelljs");
 
-let inputPath,gid;
+let inputPath, gid;
 
 module.exports = async (req, res) => {
   const { slug } = req.query;
@@ -62,8 +64,8 @@ module.exports = async (req, res) => {
     }
 
     let gdata = await driveData(data_out);
-    if(!gdata){
-        return res.json({ status: false });
+    if (!gdata) {
+      return res.json({ status: false });
     }
 
     // ffmpeg
@@ -79,6 +81,47 @@ module.exports = async (req, res) => {
     data.filesize = ffmpeg_data?.format?.size || 0;
     data.duration = Math.floor(ffmpeg_data?.format?.duration) || 0;
 
+    await timeSleep(2);
+    //check has backup
+    const bu = await Backup.findOne({
+      attributes: ["id"],
+      where: {
+        slug: slug,
+        quality: "default",
+      },
+    });
+
+    let data_bu = {};
+    data_bu.backup = backup_gid;
+    data_bu.quality = "default";
+    data_bu.slug = slug;
+    data_bu.mimesize = data.mimesize;
+    data_bu.filesize = data.filesize;
+
+    //find file
+    const files = await Files.findOne({
+      raw: true,
+      attributes: ["uid", "id", "slug"],
+      where: {
+        slug: slug,
+      },
+    });
+
+    if (files?.id) {
+      data_bu.uid = files?.uid;
+      data_bu.fid = files?.id;
+    }
+
+    if (bu?.id) {
+      await Backup.update(data_bu, {
+        where: { id: bu?.id },
+        silent: true,
+      });
+    } else {
+      await Backup.create(data_bu);
+    }
+
+    
     await Files.update(data, {
       where: { id: FindData.fid },
       silent: true,
