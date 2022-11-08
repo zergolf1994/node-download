@@ -99,7 +99,7 @@ module.exports = async (req, res) => {
     data_bu.filesize = data.filesize;
 
     //find file
-    const files = await Files.findOne({
+    const file = await Files.findOne({
       raw: true,
       attributes: ["uid", "id", "slug"],
       where: {
@@ -107,9 +107,9 @@ module.exports = async (req, res) => {
       },
     });
 
-    if (files?.id) {
-      data_bu.uid = files?.uid;
-      data_bu.fid = files?.id;
+    if (file?.id) {
+      data_bu.uid = file?.uid;
+      data_bu.fid = file?.id;
     }
 
     if (bu?.id) {
@@ -121,7 +121,7 @@ module.exports = async (req, res) => {
       await Backup.create(data_bu);
     }
 
-    
+
     await Files.update(data, {
       where: { id: FindData.fid },
       silent: true,

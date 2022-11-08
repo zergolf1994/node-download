@@ -9,6 +9,7 @@ module.exports = async (req, res) => {
   try {
     if (!gid) return res.json({ status: false });
 
+    //console.log("gid",gid)
     let data_out = await driveInfo();
 
     //Check 404
@@ -27,10 +28,12 @@ module.exports = async (req, res) => {
       return res.json({ status: false });
     }
   } catch (error) {
+    console.log(error)
     return res.json({ status: false, msg: error.name });
   }
 
   async function driveInfoRequset(gid) {
+    //console.log("driveInfoRequset")
     const url = `https://docs.google.com/get_video_info?docid=${gid}`;
     return new Promise(function (resolve, reject) {
       request(url, function (error, response, body) {
@@ -40,11 +43,13 @@ module.exports = async (req, res) => {
     });
   }
   async function driveInfo(req, res) {
+    //console.log("driveInfo")
     return new Promise(function (resolve, reject) {
       shell.exec(
         `gdrive info ${gid}`,
         { async: true, silent: true },
         function (code, stdout, stderr) {
+          //console.log(stdout)
           resolve(stdout);
         }
       );
@@ -52,6 +57,7 @@ module.exports = async (req, res) => {
   }
 
   async function driveData(data) {
+    //console.log("driveData")
     let output = {};
     let html = data.split(/\r?\n/);
     await html.forEach((k, i) => {

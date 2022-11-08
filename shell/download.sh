@@ -17,13 +17,12 @@ function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 save_path=${rootpath}/public/${slug}
 
-mkdir -p ${save_path}
-chmod 0777 ${save_path}
+sudo mkdir -p ${save_path}
 
-title=$(echo $call_data | jq -r '.data.title')
-source=$(echo $call_data | jq -r '.data.source')
-type=$(echo $call_data | jq -r '.data.type')
-folder=$(echo $call_data | jq -r '.data.folder')
+title=$(echo $call_data | jq -r '.title')
+source=$(echo $call_data | jq -r '.source')
+type=$(echo $call_data | jq -r '.type')
+folder=$(echo $call_data | jq -r '.folder')
 
 if [ $type == "gdrive" ]
 then
@@ -47,12 +46,12 @@ then
 	gdrive_ext=$(echo $gdrive_data | jq -r '.data.ext')
 
 	tmp_file=${save_path}/${gdrive_name}
-	tmp_download=${save_path}/download.txt
-	tmp_upload=${save_path}/upload.txt
+	tmp_download=${save_path}/dl_${slug}.txt
+	tmp_upload=${save_path}/up_${slug}.txt
 	file_save=${save_path}/${slug}.${gdrive_ext}
 else
-	ext=$(echo $call_data | jq -r '.data.ext')
-	speed=$(echo $call_data | jq -r '.data.speed')
+	ext=$(echo $call_data | jq -r '.ext')
+	speed=$(echo $call_data | jq -r '.speed')
 	tmp_file=${save_path}/${slug}.${ext}
 	tmp_download=${save_path}/download.txt
 	tmp_upload=${save_path}/upload.txt
@@ -76,20 +75,30 @@ fi
 if [ $type == "gdrive" ]
 then
 
+	echo "Download Gdrive"
     cd ${save_path} && sudo -u root gdrive download ${source} >> ${tmp_download} 2>&1
-    cd 
-    sleep 3
+	#wget --load-cookies ${save_path}/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${source}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${source}" -O ${file_save} >> ${tmp_download} 2>&1
+	#rm -rf ${save_path}/cookies.txt
+    #cd 
+    #sleep 3
 	curl -sS "http://127.0.0.1:8888/rename?slug=${slug}&gid=${source}"
-   	sleep 3
+   	#sleep 3
     #mv "${save_path}/'${gdrive_name}'" "${file_save}"
 else
+	echo "Download Direct"
     axel -n ${speed} -o "${tmp_file}" "${source}" >> ${tmp_download} 2>&1
 fi
+sleep 1
+echo "Upload Gdrive"
 sudo -u root gdrive upload --parent ${folder} ${file_save} >> ${tmp_upload} 2>&1
-sleep 3
+sleep 2
+echo "Save Backup"
+curl -sS "http://127.0.0.1:8888/download/backup?slug=${slug}&quality=default&sv_ip=${localip}"
+sleep 2
+echo "Send Done"
 curl -sS "http://127.0.0.1:8888/download/done?slug=${slug}"
 sleep 3
 rm -rf ${save_path}
 sleep 2
-curl -sS "http://127.0.0.1:8888/download/start?sv_ip=${localip}"
+#curl -sS "http://127.0.0.1:8888/download/start?sv_ip=${localip}"
 exit 1

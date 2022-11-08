@@ -179,7 +179,7 @@ module.exports = async (req, res) => {
     }
 
     await timeSleep(1);
-    
+
     const FilesEmpty = await Files.findAll({
       where: where_files,
       order: set_order,
@@ -239,6 +239,7 @@ module.exports = async (req, res) => {
         status: true,
         msg: `Process Download created`,
         slug: data.slug,
+        notUid: no_uid,
       });
     } else {
       return res.json({ status: false, msg: `false insert` });
