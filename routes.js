@@ -14,10 +14,13 @@ router.get("/download/backup", require("./controllers/dl.backup"));
 router.get("/download/start", require("./controllers/dl.start"));
 router.get("/download/data", require("./controllers/dl.data"));
 router.get("/download/done", require("./controllers/dl.done"));
-router.get("/download/error", require("./controllers/download.error"));
+router.get("/download/error", require("./controllers/dl.error"));
 
 router.all("/rename", require("./controllers/rename"));
 router.all("/remote", auth, require("./controllers/remote"));
+
+//add token gdrive
+router.get("/gdrive/token", require("./controllers/gdrive.token"));
 
 //server
 router.get("/server/create", require("./controllers/server.create"));

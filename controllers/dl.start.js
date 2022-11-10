@@ -158,12 +158,27 @@ module.exports = async (req, res) => {
     }
 
     await timeSleep(1);
+    let files;
 
-    const files = await Files.findAll({
+    files = await Files.findAll({
       where: file_where,
       order: set_order,
       limit: file_limit,
     });
+
+    if (!files.length && server?.uid) {
+      if (no_uid.length > 0) {
+        file_where.uid = { [Op.notIn]: no_uid };
+      } else {
+        delete file_where.uid;
+      }
+      
+      files = await Files.findAll({
+        where: file_where,
+        order: set_order,
+        limit: file_limit,
+      });
+    }
 
     if (!files.length) {
       await Files.update(
