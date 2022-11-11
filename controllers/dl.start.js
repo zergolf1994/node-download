@@ -14,7 +14,8 @@ const { SettingValue, timeSleep } = require("../modules/Function");
 
 module.exports = async (req, res) => {
   const { sv_ip, slug } = req.query;
-  let no_uid = [];
+  let no_uid = [],
+    no_sid = [];
   try {
     if (!sv_ip) return res.json({ status: false, msg: "no_query_sv_ip" });
     let {
@@ -110,6 +111,26 @@ module.exports = async (req, res) => {
         }
       }
 
+      //get process
+      let pc = await Progress.findAll({
+        raw: true,
+        where: { type: ["dlv2", "download"] },
+        attributes: ["sid", "type"],
+      });
+      
+      pc.forEach((el) => {
+        if (!no_sid.includes(el?.sid)) {
+          no_sid.push(el?.sid);
+        }
+      });
+
+      let sv = await Servers.update(
+        { work: 0 },
+        {
+          where: { id: { [Op.notIn]: no_sid }, work: { [Op.ne]: 0 } },
+        }
+      );
+
       return res.json({ status: false, msg: "server_is_busy" });
     }
     // check status all
@@ -172,7 +193,7 @@ module.exports = async (req, res) => {
       } else {
         delete file_where.uid;
       }
-      
+
       files = await Files.findAll({
         where: file_where,
         order: set_order,
