@@ -81,6 +81,7 @@ then
 	rm -rf ${save_path}/cookies.txt
 
 	if [ -f "$file_save" ]; then
+		echo "${slug} Download Gdrive Done"
 	else 
 		echo "${slug} Redownload Download Gdrive"
 		sleep 2
