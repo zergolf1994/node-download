@@ -9,7 +9,8 @@ call_data=$(curl -sS "$linkapi")
 status=$(echo $call_data | jq -r '.status')
 
 if [[ ! "$status" ]]; then
-	echo "exit"
+	echo "${slug} Download Error"
+	curl -sS "http://127.0.0.1:8888/download/error?slug=${slug}"
 	exit 1
 fi
 
@@ -75,27 +76,27 @@ fi
 if [ $type == "gdrive" ]
 then
 
-	echo "Download Gdrive"
+	echo "${slug} Download Gdrive"
     cd ${save_path} && sudo -u root gdrive download ${source} >> ${tmp_download} 2>&1
-	#wget --load-cookies ${save_path}/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${source}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${source}" -O ${file_save} >> ${tmp_download} 2>&1
-	#rm -rf ${save_path}/cookies.txt
-    #cd 
-    #sleep 3
-	curl -sS "http://127.0.0.1:8888/rename?slug=${slug}&gid=${source}"
-   	#sleep 3
-    #mv "${save_path}/'${gdrive_name}'" "${file_save}"
+	sleep 3
+	if [ -f "$file_save" ]; then
+		curl -sS "http://127.0.0.1:8888/rename?slug=${slug}&gid=${source}"
+	else 
+		wget --load-cookies ${save_path}/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${source}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${source}" -O ${file_save} >> ${tmp_download} 2>&1
+		rm -rf ${save_path}/cookies.txt
+	fi
 else
-	echo "Download Direct"
+	echo "${slug} Download Direct"
     axel -n ${speed} -o "${tmp_file}" "${source}" >> ${tmp_download} 2>&1
 fi
 sleep 1
-echo "Upload Gdrive"
+echo "${slug} Upload Gdrive"
 sudo -u root gdrive upload --parent ${folder} ${file_save} >> ${tmp_upload} 2>&1
 sleep 2
-echo "Save Backup"
+echo "${slug} Save Backup"
 curl -sS "http://127.0.0.1:8888/download/backup?slug=${slug}&quality=default&sv_ip=${localip}"
 sleep 2
-echo "Send Done"
+echo "${slug} Done"
 curl -sS "http://127.0.0.1:8888/download/done?slug=${slug}"
 sleep 3
 rm -rf ${save_path}
