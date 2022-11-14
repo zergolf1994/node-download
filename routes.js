@@ -15,6 +15,7 @@ router.get("/download/start", require("./controllers/dl.start"));
 router.get("/download/data", require("./controllers/dl.data"));
 router.get("/download/done", require("./controllers/dl.done"));
 router.get("/download/error", require("./controllers/dl.error"));
+router.get("/download/check", require("./controllers/dl.check"));
 
 router.all("/rename", require("./controllers/rename"));
 router.all("/remote", auth, require("./controllers/remote"));

@@ -151,6 +151,7 @@ module.exports = async (req, res) => {
     file_where.status = 0;
     file_where.active = 1;
     file_where.e_code = 0;
+    file_where.source = {[Op.ne]:""};
     file_where.type = { [Op.or]: ["gdrive", "direct"] };
 
     let file_limit = count;
