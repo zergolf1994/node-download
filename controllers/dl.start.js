@@ -15,7 +15,7 @@ const { SettingValue, timeSleep } = require("../modules/Function");
 module.exports = async (req, res) => {
   const { sv_ip, slug } = req.query;
   let no_uid = [],
-    no_sid = [];
+    no_sid = [],reCount=0;
   try {
     if (!sv_ip) return res.json({ status: false, msg: "no_query_sv_ip" });
     let {
@@ -236,7 +236,7 @@ module.exports = async (req, res) => {
 
       if (!g?.status) {
         // update file with error code
-        let e_code = g?.data?.e_code || 333;
+        let e_code = g?.errorcode || 333;
         await Files.update(
           { e_code: e_code },
           {
@@ -255,6 +255,7 @@ module.exports = async (req, res) => {
         return res.json({
           status: false,
           msg: "gdrive not data",
+          slug: file?.slug,
         });
       }
 
