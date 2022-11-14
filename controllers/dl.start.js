@@ -261,7 +261,7 @@ module.exports = async (req, res) => {
 
       if (g?.data?.Mime != "video/mp4") {
         await Files.update(
-          { e_code: 333 },
+          { e_code: 104 },
           {
             where: { slug: file?.slug },
             silent: true,
