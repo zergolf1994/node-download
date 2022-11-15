@@ -245,6 +245,7 @@ module.exports = async (req, res) => {
           }
         );
 
+        await timeSleep(2);
         // run start again
         shell.exec(
           `sudo bash ${global.dir}/shell/run.sh ${file?.slug}`,

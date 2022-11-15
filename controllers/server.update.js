@@ -5,6 +5,7 @@ const fs = require("fs");
 const Servers = require("../modules/Mysql/Servers");
 const shell = require("shelljs");
 const { SettingValue, timeSleep } = require("../modules/Function");
+const { Sequelize, Op } = require("sequelize");
 
 module.exports = async (req, res) => {
   const { sv_ip } = req.query;
@@ -46,6 +47,7 @@ module.exports = async (req, res) => {
       return res.json({ status: false, msg: `not_ready` });
     }
   } catch (error) {
+    console.log(error)
     return res.json({ status: false, msg: error.name });
   }
 };
