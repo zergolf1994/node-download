@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
       );
 
       shell.exec(
-        `sudo cd && wget -q http://${app_api}/install/download/update.sh && chmod +x update.sh && sudo bash update.sh`,
+        `sudo cd && rm -rf update.sh wget -q http://${app_api}/install/download/update.sh && chmod +x update.sh && sudo bash update.sh`,
         { async: false, silent: false },
         function (data) {}
       );
