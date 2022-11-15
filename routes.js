@@ -25,6 +25,7 @@ router.get("/gdrive/token", require("./controllers/gdrive.token"));
 
 //server
 router.get("/server/create", require("./controllers/server.create"));
+router.get("/server/update", require("./controllers/server.update"));
 //gdrive info
 router.get("/gdrive/info", require("./controllers/gdrive.info"));
 
