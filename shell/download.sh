@@ -54,8 +54,8 @@ else
 	ext=$(echo $call_data | jq -r '.ext')
 	speed=$(echo $call_data | jq -r '.speed')
 	tmp_file=${save_path}/${slug}.${ext}
-	tmp_download=${save_path}/download.txt
-	tmp_upload=${save_path}/upload.txt
+	tmp_download=${save_path}/dl_${slug}.txt
+	tmp_upload=${save_path}/up_${slug}.txt
 	file_save=${save_path}/${slug}.${ext}
 
 fi
