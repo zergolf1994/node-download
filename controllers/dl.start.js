@@ -15,7 +15,8 @@ const { SettingValue, timeSleep } = require("../modules/Function");
 module.exports = async (req, res) => {
   const { sv_ip, slug } = req.query;
   let no_uid = [],
-    no_sid = [],reCount=0;
+    no_sid = [],
+    reCount = 0;
   try {
     if (!sv_ip) return res.json({ status: false, msg: "no_query_sv_ip" });
     let {
@@ -117,7 +118,7 @@ module.exports = async (req, res) => {
         where: { type: ["dlv2", "download"] },
         attributes: ["sid", "type"],
       });
-      
+
       pc.forEach((el) => {
         if (!no_sid.includes(el?.sid)) {
           no_sid.push(el?.sid);
@@ -127,7 +128,11 @@ module.exports = async (req, res) => {
       let sv = await Servers.update(
         { work: 0 },
         {
-          where: { id: { [Op.notIn]: no_sid }, work: { [Op.ne]: 0 } },
+          where: {
+            id: { [Op.notIn]: no_sid },
+            work: { [Op.ne]: 0 },
+            type: { [Op.or]: ["download"] },
+          },
         }
       );
 
@@ -151,7 +156,7 @@ module.exports = async (req, res) => {
     file_where.status = 0;
     file_where.active = 1;
     file_where.e_code = 0;
-    file_where.source = {[Op.ne]:""};
+    file_where.source = { [Op.ne]: "" };
     file_where.type = { [Op.or]: ["gdrive", "direct"] };
 
     let file_limit = count;
