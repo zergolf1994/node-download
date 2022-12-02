@@ -77,18 +77,18 @@ if [ $type == "gdrive" ]
 then
 
 	echo "${slug} Download Gdrive"
-	#wget --load-cookies ${save_path}/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${source}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${source}" -O ${file_save} >> ${tmp_download} 2>&1
-	#rm -rf ${save_path}/cookies.txt
-	#sleep 1
+	wget --load-cookies ${save_path}/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${source}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${source}" -O ${file_save} >> ${tmp_download} 2>&1
+	rm -rf ${save_path}/cookies.txt
+	sleep 1
 	
 	#if [ -f "$file_save" ]; then
 	#	echo "${slug} Download Gdrive Done"
 	#else 
 	#	echo "${slug} Redownload Download Gdrive"
-    	cd ${save_path} && sudo -u root gdrive download ${source} >> ${tmp_download} 2>&1
-		sleep 2
-		curl -sS "http://127.0.0.1:8888/rename?slug=${slug}&gid=${source}"
-		sleep 1
+    	#cd ${save_path} && sudo -u root gdrive download ${source} >> ${tmp_download} 2>&1
+		#sleep 2
+		#curl -sS "http://127.0.0.1:8888/rename?slug=${slug}&gid=${source}"
+		#sleep 1
 	#fi
 
 	#เช็คไฟล์ download
