@@ -13,13 +13,17 @@ module.exports = async (req, res) => {
 
     let data_out = await driveInfo();
     let error404 = /Failed to get file/i;
+    let updateDone = /11HMaFfheJprmnK8QEJquuJIT913DGJJ4/i;
 
     if (error404.test(data_out)) {
       console.error("Error", "cannot connect");
-      return res.json({ status: false, msg: "error" });
-    } else {
+      return res.json({ status: false, msg: "_error_token" });
+    }	else if (updateDone.test(data_out)) {
       console.log("Update", "cannot connect");
-      return res.json({ status: true, msg: "update token" });
+      return res.json({ status: true, msg: "_updated_token" });
+    } else {
+      console.error("Error", "cannot connect install");
+      return res.json({ status: false, msg: "_try_again" });
     }
   } catch (error) {
     console.error(error);
@@ -40,7 +44,7 @@ module.exports = async (req, res) => {
         `printf "${token}" | gdrive info 11HMaFfheJprmnK8QEJquuJIT913DGJJ4`,
         { async: true, silent: true },
         function (code, stdout, stderr) {
-          //console.log(stdout)
+          console.log(stdout)
           resolve(stdout);
         }
       );

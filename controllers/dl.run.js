@@ -8,13 +8,13 @@ module.exports = async (req, res) => {
 
   try {
     shell.exec(
-      `sudo dos2unix ${global.dir}/shell/run.sh`,
+      `sudo dos2unix ${global.dir}/shell/download.sh`,
       { async: false, silent: false },
       function (data) {}
     );
 
     shell.exec(
-      `sudo dos2unix ${global.dir}/shell/download.sh`,
+      `sudo dos2unix ${global.dir}/shell/update_val.sh`,
       { async: false, silent: false },
       function (data) {}
     );
@@ -28,6 +28,6 @@ module.exports = async (req, res) => {
 
     return res.json({ status: true });
   } catch (error) {
-    return res.json({ status: false, msg: error.name, t:"dl_run" });
+    return res.json({ status: false, msg: error.name });
   }
 };

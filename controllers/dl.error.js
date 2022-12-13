@@ -1,13 +1,17 @@
 "use strict";
 
 const path = require("path");
-const Files = require("../modules/Mysql/Files");
-const Servers = require("../modules/Mysql/Servers");
-const Progress = require("../modules/Mysql/Progress");
+const shell = require("shelljs");
+const fs = require("fs");
+
+const { Servers, Progress, Files, Backup } = require("../modules/db");
 const { Sequelize, Op } = require("sequelize");
+const { WriteLog, TimeSleep, GetIP } = require("../modules/utils");
 
 module.exports = async (req, res) => {
-  const { slug, e_code, sv_ip } = req.query;
+  const sv_ip = await GetIP();
+  const { slug, e_code } = req.query;
+
   try {
     if (!slug) return res.json({ status: false });
 
@@ -32,6 +36,7 @@ module.exports = async (req, res) => {
 
     return res.json({ status: true });
   } catch (error) {
-    return res.json({ status: false, msg: error.name });
+    await WriteLog(error);
+    return res.json({ status: false, msg: `error` });
   }
 };
