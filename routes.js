@@ -9,11 +9,11 @@ router.get("/dl/run", require("./controllers/dl.run"));
 router.all("/rename", require("./controllers/rename"));
 
 router.get("/start", require("./controllers/dl.start"));
-router.get("/data", require("./controllers/dl.data"));
-router.get("/status", require("./controllers/dlv2.status"));
-router.get("/backup", require("./controllers/dl.backup"));
-router.get("/done", require("./controllers/dl.done"));
-router.get("/error", require("./controllers/dl.error"));
+//router.get("/data", require("./controllers/dl.data"));
+//router.get("/status", require("./controllers/dlv2.status"));
+//router.get("/backup", require("./controllers/dl.backup"));
+//router.get("/done", require("./controllers/dl.done"));
+//router.get("/error", require("./controllers/dl.error"));
 
 //router.get("/download/check", require("./controllers/dl.check"));
 
