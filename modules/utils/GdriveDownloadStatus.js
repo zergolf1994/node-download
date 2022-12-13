@@ -12,27 +12,27 @@ module.exports = async (html) => {
 
   try {
     var regex = {
-      uploading: /Uploading/gm,
-      uploaded: /Uploaded/gm,
+      downloading: /Downloading/gm,
+      downloaded: /Downloaded/gm,
       failed: /Failed/gm,
     };
 
     if (html.match(regex.failed)) {
       data.err = true;
-    } else if (html.match(regex.uploading)) {
-      if (html.match(regex.uploaded)) {
+    } else if (html.match(regex.downloading)) {
+      if (html.match(regex.downloaded)) {
         data.percent = 100;
-        data.uploaded = true;
+        data.downloaded = true;
       } else {
         let code = html.replace(/\s\s+/g, " ");
         let regexp = /(.*?)Rate(.*?)\/s/g;
-        let array = [...code?.match(regexp)];
+        let array = [...code.match(regexp)];
         data.data = array.at(-1).trim().split(",")[0];
 
         if (data.data) {
-          let uploading = SizeTobyte(data.data.split("/")[0]);
+          let downloading = SizeTobyte(data.data.split("/")[0]);
           let fileSize = SizeTobyte(data.data.split("/")[1]);
-          data.percent = ((uploading * 100) / fileSize ?? 0).toFixed(0);
+          data.percent = ((downloading * 100) / fileSize ?? 0).toFixed(0);
         }
       }
     }

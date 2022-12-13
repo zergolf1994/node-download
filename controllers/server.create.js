@@ -5,9 +5,14 @@ const fs = require("fs");
 
 const { Servers } = require("../modules/db");
 const { Sequelize, Op } = require("sequelize");
+const { GetIP, GetHostname } = require("../modules/utils");
 
 module.exports = async (req, res) => {
-  const { sv_ip, sv_name } = req.query;
+  //const { sv_ip, sv_name } = req.query;
+
+  const sv_ip = await GetIP();
+  const sv_name = await GetHostname();
+  
   try {
     if (!sv_ip) return res.json({ status: false });
 

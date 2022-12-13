@@ -11,8 +11,6 @@ module.exports = async (req, res) => {
 
     let data_out = await driveInfo();
 
-    console.log("data_out",data_out)
-
     //Check 404
     let error404 = /Failed to get file/i;
     let verifi = /Enter verification code/i;
@@ -21,19 +19,20 @@ module.exports = async (req, res) => {
       const { errorcode } = await driveInfoRequset(gid);
 
       return res.json({ status: false, data_out, errorcode });
-    }else if (verifi.test(data_out)) {
-
-      return res.json({ status: false, msg:"_please_update_token" });
+    } else if (verifi.test(data_out)) {
+      return res.json({ status: false, msg: "_please_update_token" });
+    } else if (data_out != "") {
+      let data = await driveData(data_out);
+      if (data) {
+        data.ext = data?.Mime.split("/")[1];
+        return res.json({ status: true, data });
+      } else {
+        return res.json({ status: false });
+      }
     }
-
-    let data = await driveData(data_out);
-    if (data) {
-      data.ext = data?.Mime.split("/")[1];
-      return res.json({ status: true, data });
-    } else {
-      return res.json({ status: false });
-    }
+    return res.json({ status: false, msg: "_please_update_token" });
   } catch (error) {
+    console.log(error);
     return res.json({ status: false, msg: error.name });
   }
 
@@ -47,7 +46,6 @@ module.exports = async (req, res) => {
     });
   }
   async function driveInfo(req, res) {
-
     try {
       return new Promise(function (resolve, reject) {
         shell.exec(
