@@ -17,7 +17,7 @@ module.exports = async (e) => {
   try {
     console.log("timeout", dl_auto_cancle);
     const sv = await Servers.findOne({
-      where: { sv_ip: sv_ip, type: "dlv2" },
+      where: { sv_ip: sv_ip, type: "download" },
       raw: true,
       attributes: ["id"],
     });
@@ -30,7 +30,7 @@ module.exports = async (e) => {
     let ovdl = await Progress.findOne({
       where: {
         sid: sv?.id,
-        type: "dlv2",
+        type: "download",
         [Op.and]: Sequelize.literal(
           `ABS(TIMESTAMPDIFF(SECOND , updatedAt , NOW())) >= ${dl_auto_cancle}`
         ),
@@ -66,7 +66,7 @@ module.exports = async (e) => {
     let ovdl_2 = await Progress.findOne({
       where: {
         sid: sv?.id,
-        type: "dlv2",
+        type: "download",
         [Op.and]: Sequelize.literal(
           `ABS(TIMESTAMPDIFF(SECOND , updatedAt , NOW())) >= ${dl_auto_cancle}`
         ),

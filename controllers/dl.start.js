@@ -44,6 +44,12 @@ module.exports = async (req, res) => {
       },
     });
     if (!server) {
+      // เซิฟเวอร์ไม่ว่าง
+      if (dl_auto_cancle > 0) {
+        //เช็คว่ามีไฟล์โหลดเกินเวลาไหม
+        await DownloadTimeOut();
+      }
+      await ResetServerWork();
       return res.json({ status: false, msg: "server_is_busy" });
     }
 
@@ -104,6 +110,18 @@ module.exports = async (req, res) => {
       order: set_order,
       limit: file_limit,
     });
+
+    if (!files.length) {
+      // reset error 333
+      await Files.update(
+        { status: 0, e_code: 0 },
+        {
+          where: { status: [0, 1], e_code: [1, 2, 333] },
+          silent: true,
+        }
+      );
+      return res.json({ status: false, msg: `files_not_empty`, e: 1 });
+    }
 
     const number = Math.floor(Math.random() * files.length);
     let file = files[number];
@@ -172,9 +190,9 @@ module.exports = async (req, res) => {
     process_data.slug = file?.slug;
 
     const create = await Progress.create(process_data);
-
+    await TimeSleep(1);
     if (!create?.id) return res.json({ status: false, msg: `db_false` });
-    
+
     await Servers.update(
       { work: 1 },
       {
@@ -188,6 +206,13 @@ module.exports = async (req, res) => {
         where: { id: process_data.fid },
         silent: true,
       }
+    );
+
+    await TimeSleep(1);
+    shell.exec(
+      `sudo bash ${global.dir}/shell/download.sh ${file?.slug}`,
+      { async: false, silent: false },
+      function (data) {}
     );
 
     return res.json({
