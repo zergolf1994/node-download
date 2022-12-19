@@ -58,12 +58,12 @@ module.exports = async (req, res) => {
       let GdriveDownStatus = await GdriveDownloadStatus(data_dl);
       if (GdriveDownStatus?.err) {
         // update server to inactive
-        await Servers.update(
+        /*await Servers.update(
           { active: 0 },
           {
             where: { id: pc?.sid },
           }
-        );
+        );*/
         return res.json({ status: false, error: GdriveDownStatus?.err });
       }
       data.download = parseFloat(GdriveDownStatus?.percent);
@@ -76,12 +76,12 @@ module.exports = async (req, res) => {
       if (GdriveStatus?.err) {
         console.error(slug, GdriveStatus?.err);
         // update server to inactive
-        await Servers.update(
+        /*await Servers.update(
           { active: 0 },
           {
             where: { id: pc?.sid },
           }
-        );
+        );*/
         return res.json({ status: false, error: GdriveStatus?.err });
       }
       data.upload = parseFloat(GdriveStatus?.percent);
