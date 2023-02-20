@@ -16,7 +16,7 @@ module.exports = async (file) => {
       request(
         {
           url,
-          proxy: "http://qjqkvcqd-rotate:72gpvbukvn4v@p.webshare.io:80",
+          proxy: "http://kmreiqbn-rotate:zmbl6t26bf54@p.webshare.io:80",
           headers: {
             Authorization: `${token?.token_type} ${token?.access_token}`,
           },

@@ -158,8 +158,11 @@ module.exports = async (req, res) => {
             slug: file?.slug,
           });
         }
+      }
 
-        if (g?.data?.Mime != "video/mp4") {
+        let ext = g?.data?.ext
+        if (ext !== "mp4") {
+          console.log("ext",ext)
           await Files.update(
             { e_code: 104 },
             {
@@ -174,7 +177,6 @@ module.exports = async (req, res) => {
             slug: file?.slug,
           });
         }
-      }
     } else if (file?.type == "direct") {
     } else {
       return res.json({
